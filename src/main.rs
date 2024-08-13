@@ -13,32 +13,6 @@ lazy_static! {
         HashSet::from(["sin", "cos", "tan", "sqrt", "log", "ln", "abs"]);
 }
 
-fn calculate(input: &mut String) -> Result<f32, String> {
-    let mut tokens = Vec::new();
-    let variables: HashMap<String, f32> = HashMap::new();
-    match tokenize(input, &mut tokens, &variables) {
-        Ok(_) => (),
-        Err(err) => {
-            return Err(err);
-        }
-    };
-
-    let ops = match shunting_yardify(&tokens) {
-        Ok(ops) => ops,
-        Err(err) => {
-            return Err(format!("Syntax error: {}", err));
-        }
-    };
-
-    let out = match eval_reverse_polish(&ops) {
-        Ok(out) => out,
-        Err(err) => {
-            return Err(err);
-        }
-    };
-    return Ok(out);
-}
-
 fn calculate_from_tokens(tokens: &Vec<String>) -> Result<f32, String> {
     let ops = match shunting_yardify(tokens) {
         Ok(ops) => ops,
@@ -410,6 +384,32 @@ mod tests {
     use approx::assert_relative_eq;
 
     use super::*;
+
+    fn calculate(input: &mut String) -> Result<f32, String> {
+        let mut tokens = Vec::new();
+        let variables: HashMap<String, f32> = HashMap::new();
+        match tokenize(input, &mut tokens, &variables) {
+            Ok(_) => (),
+            Err(err) => {
+                return Err(err);
+            }
+        };
+
+        let ops = match shunting_yardify(&tokens) {
+            Ok(ops) => ops,
+            Err(err) => {
+                return Err(format!("Syntax error: {}", err));
+            }
+        };
+
+        let out = match eval_reverse_polish(&ops) {
+            Ok(out) => out,
+            Err(err) => {
+                return Err(err);
+            }
+        };
+        return Ok(out);
+    }
 
     #[test]
     fn addition() {
